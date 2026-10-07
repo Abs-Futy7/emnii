@@ -2,9 +2,17 @@ from datetime import datetime
 from uuid import uuid4
 
 from sqlalchemy import UniqueConstraint
+from sqlalchemy.dialects import postgresql
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 
-from app.db.models import AuditLog, Client, OrganizationMembership, User
+from app.db.models import (
+    AuditLog,
+    Client,
+    OrganizationMembership,
+    PIIFinding,
+    User,
+    ValidationIssue,
+)
 from app.domain.enums import ClientStatus, OrganizationRole
 from app.schemas.audit_log import AuditLogRead
 
@@ -33,7 +41,18 @@ def test_user_email_has_database_unique_constraint() -> None:
 
 def test_postgresql_types_and_timezone_aware_timestamps() -> None:
     assert isinstance(User.__table__.c.id.type, UUID)
-    assert isinstance(AuditLog.__table__.c.metadata.type, JSONB)
+    metadata_type = AuditLog.__table__.c.metadata.type.dialect_impl(
+        postgresql.dialect()
+    )
+    assert isinstance(metadata_type, JSONB)
+    examples_type = ValidationIssue.__table__.c.example_rows.type.dialect_impl(
+        postgresql.dialect()
+    )
+    assert isinstance(examples_type, JSONB)
+    pii_samples_type = PIIFinding.__table__.c.sample_redacted_values.type.dialect_impl(
+        postgresql.dialect()
+    )
+    assert isinstance(pii_samples_type, JSONB)
     assert User.__table__.c.created_at.type.timezone is True
     assert AuditLog.__table__.c.created_at.type.timezone is True
 

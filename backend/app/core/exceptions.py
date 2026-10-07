@@ -55,6 +55,51 @@ class ConfigurationError(AppException):
         )
 
 
+class NotFoundError(AppException):
+    def __init__(self, message: str = "Resource not found") -> None:
+        super().__init__(
+            message,
+            code="resource_not_found",
+            status_code=status.HTTP_404_NOT_FOUND,
+        )
+
+
+class InvalidUploadError(AppException):
+    def __init__(self, message: str) -> None:
+        super().__init__(
+            message,
+            code="invalid_upload",
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+        )
+
+
+class InvalidRequestError(AppException):
+    def __init__(self, message: str) -> None:
+        super().__init__(
+            message,
+            code="invalid_request",
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+        )
+
+
+class UploadTooLargeError(AppException):
+    def __init__(self, message: str) -> None:
+        super().__init__(
+            message,
+            code="upload_too_large",
+            status_code=status.HTTP_413_CONTENT_TOO_LARGE,
+        )
+
+
+class ExternalServiceError(AppException):
+    def __init__(self, message: str) -> None:
+        super().__init__(
+            message,
+            code="external_service_unavailable",
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+
+
 async def app_exception_handler(
     request: Request,
     exception: AppException,

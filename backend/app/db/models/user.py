@@ -10,6 +10,8 @@ from app.db.mixins import TimestampMixin, UUIDPrimaryKeyMixin
 
 if TYPE_CHECKING:
     from app.db.models.audit_log import AuditLog
+    from app.db.models.dataset import Dataset
+    from app.db.models.document import Document
     from app.db.models.organization_membership import OrganizationMembership
 
 
@@ -49,5 +51,13 @@ class User(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     )
     audit_logs: Mapped[list[AuditLog]] = relationship(
         back_populates="user",
+        passive_deletes=True,
+    )
+    uploaded_datasets: Mapped[list[Dataset]] = relationship(
+        back_populates="uploader",
+        passive_deletes=True,
+    )
+    uploaded_documents: Mapped[list[Document]] = relationship(
+        back_populates="uploader",
         passive_deletes=True,
     )

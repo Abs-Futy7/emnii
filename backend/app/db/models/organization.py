@@ -11,6 +11,7 @@ from app.db.mixins import TimestampMixin, UUIDPrimaryKeyMixin
 if TYPE_CHECKING:
     from app.db.models.audit_log import AuditLog
     from app.db.models.client import Client
+    from app.db.models.dataset import Dataset
     from app.db.models.organization_membership import OrganizationMembership
 
 
@@ -44,4 +45,8 @@ class Organization(UUIDPrimaryKeyMixin, TimestampMixin, Base):
         back_populates="organization",
         cascade="all, delete-orphan",
         passive_deletes=True,
+    )
+    datasets: Mapped[list[Dataset]] = relationship(
+        back_populates="organization",
+        viewonly=True,
     )

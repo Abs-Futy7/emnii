@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any
 from uuid import UUID
 
-from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Index, String, func
+from sqlalchemy import JSON, CheckConstraint, DateTime, ForeignKey, Index, String, func
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -53,7 +53,7 @@ class AuditLog(UUIDPrimaryKeyMixin, Base):
     resource_id: Mapped[UUID | None] = mapped_column(PG_UUID(as_uuid=True))
     metadata_: Mapped[dict[str, Any]] = mapped_column(
         "metadata",
-        JSONB,
+        JSON().with_variant(JSONB, "postgresql"),
         nullable=False,
         default=dict,
         server_default="{}",

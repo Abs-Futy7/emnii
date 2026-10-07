@@ -22,6 +22,8 @@ from app.domain.enums import ClientStatus
 
 if TYPE_CHECKING:
     from app.db.models.audit_log import AuditLog
+    from app.db.models.dataset import Dataset
+    from app.db.models.document import Document
     from app.db.models.organization import Organization
 
 
@@ -32,6 +34,11 @@ class Client(UUIDPrimaryKeyMixin, TimestampMixin, Base):
             "organization_id",
             "slug",
             name="uq_clients_organization_slug",
+        ),
+        UniqueConstraint(
+            "organization_id",
+            "id",
+            name="uq_clients_organization_id_id",
         ),
         Index("ix_clients_organization_status", "organization_id", "status"),
         CheckConstraint(
@@ -72,5 +79,15 @@ class Client(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     organization: Mapped[Organization] = relationship(back_populates="clients")
     audit_logs: Mapped[list[AuditLog]] = relationship(
         back_populates="client",
+        passive_deletes=True,
+    )
+    datasets: Mapped[list[Dataset]] = relationship(
+        back_populates="client",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+    documents: Mapped[list[Document]] = relationship(
+        back_populates="client",
+        cascade="all, delete-orphan",
         passive_deletes=True,
     )
